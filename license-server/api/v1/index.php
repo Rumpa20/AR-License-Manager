@@ -19,6 +19,7 @@ use ARLM\ApiException;
 use ARLM\Http;
 use ARLM\LicenseEngine;
 use ARLM\RateLimiter;
+use ARLM\Settings;
 use ARLM\Logger;
 
 header('Referrer-Policy: no-referrer');
@@ -51,6 +52,12 @@ try {
         throw new ApiException(403, 'PERMISSION_DENIED', 'This API client lacks permission for this endpoint.');
     }
 
+    if (Settings::get('maintenance_mode', '0') === '1') {
+        throw new ApiException(503, 'MAINTENANCE_MODE', 'The license server is in maintenance mode. Try again later.');
+    }
+
+    RateLimiter::check((int) $client['id'], (int) $client['rate_limit_m']);
+
     if ($isPost) {
         $body = Http::jsonBody();
         $ctx = ApiAuth::authenticatePost($body);
@@ -68,7 +75,6 @@ try {
             default      => throw new ApiException(404, 'UNKNOWN_ENDPOINT', 'Unknown API endpoint.'),
         };
     } else {
-        RateLimiter::check((int) $client['id'], (int) $client['rate_limit_m']);
         $response = LicenseEngine::products();
     }
 } catch (ApiException $e) {
