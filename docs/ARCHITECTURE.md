@@ -25,7 +25,7 @@ Deployed at `https://arnitcreation.online/arlm/`.
 
 ```
 license-server/
-  api/v1/index.php     REST API v1 entry point (activate/validate/deactivate/check/products)
+  api/v1/index.php     REST API v1 entry point (activate/validate/deactivate/check/products + portal endpoints)
   public/index.php     Admin dashboard entry point
   install/index.php    One-time web installer (DB tables, keys, admin)
   webhooks/store/      Signed server-to-server store integration (Cashfree adapter)
@@ -69,7 +69,15 @@ Critical operations (activation, fulfillment) run inside transactions.
 - Stage 1 (COMPLETE): schema, server core, key generator, domain policy,
   signatures, rate limiting, API client auth, license engine, API v1
   router, installer, admin login + dashboard shell.
-- Stage 2 (PLANNED): full admin pages (products, licenses, customers,
-  orders, activations, API clients, logs, reports, settings).
-- Stage 3 (PLANNED): SMF 2.1.8 package + customer portal.
-- Stage 4 (PLANNED): store webhook adapter, SDKs, docs, packaging, grading.
+- Stage 2 (COMPLETE): full admin dashboard - 13 modules (dashboard,
+  products, licenses with bulk actions, generate, customers, orders,
+  activations with admin deactivate/reactivate, API clients with one-time
+  secret display, API/security logs, reports with CSV, settings, system),
+  front-controller routing, plus API hardening (rate limiting on every
+  endpoint, enforced maintenance mode).
+- Stage 3 (COMPLETE): SMF 2.1.8 package (package-info.xml with hook tags,
+  no core file edits, reversible install/uninstall) + member license
+  portal (index.php?action=licenses) backed by the dedicated
+  portal_licenses / portal_deactivate API endpoints.
+- Stage 4 (PLANNED): store webhook adapter, SDKs, docs, packaging, final
+  ZIP deliverables.

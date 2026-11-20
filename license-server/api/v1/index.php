@@ -28,7 +28,7 @@ header('X-Frame-Options: DENY');
 $start = microtime(true);
 $endpoint = preg_replace('/[^a-z_]/', '', (string) ($_GET['endpoint'] ?? ''));
 if ($endpoint === '') {
-    Http::jsonOut(404, ['success' => false, 'error_code' => 'UNKNOWN_ENDPOINT', 'message' => 'Missing endpoint. Use /api/v1/{activate|validate|deactivate|check|products}.']);
+    Http::jsonOut(404, ['success' => false, 'error_code' => 'UNKNOWN_ENDPOINT', 'message' => 'Missing endpoint. Use /api/v1/{activate|validate|deactivate|check|products|portal_licenses|portal_deactivate}.']);
 }
 
 Http::requireHttps((bool) \ARLM\Config::get('allow_http_debug', false));
@@ -56,7 +56,9 @@ try {
         throw new ApiException(503, 'MAINTENANCE_MODE', 'The license server is in maintenance mode. Try again later.');
     }
 
-    RateLimiter::check((int) $client['id'], (int) $client['rate_limit_m']);
+    if (!$isPost) {
+        RateLimiter::check((int) $client['id'], (int) $client['rate_limit_m']);
+    }
 
     if ($isPost) {
         $body = Http::jsonBody();
@@ -72,6 +74,8 @@ try {
             'validate'   => LicenseEngine::validate($body, $ctx),
             'deactivate' => LicenseEngine::deactivate($body, $ctx),
             'check'      => LicenseEngine::check($body, $ctx),
+            'portal_licenses'  => LicenseEngine::portalLicenses($body, $ctx),
+            'portal_deactivate' => LicenseEngine::portalDeactivate($body, $ctx),
             default      => throw new ApiException(404, 'UNKNOWN_ENDPOINT', 'Unknown API endpoint.'),
         };
     } else {

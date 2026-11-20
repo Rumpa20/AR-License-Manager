@@ -74,6 +74,32 @@ Same body; `domain` optional. Returns license status/expiry/usage only.
 Lists active products: `product_uid, name, version, category,
 default_license_type, default_activation_limit`.
 
+## Portal endpoints (stronger-scoped permission)
+
+These two POST endpoints are for owner-operated portals that authenticate
+the user themselves (e.g. the included SMF 2.1 mod with a logged-in member).
+They require the API client to be granted the `portal_licenses` /
+`portal_deactivate` permissions explicitly (Admin > API Clients). The
+calling platform passes the authenticated user's email; the server only ever
+returns license summaries (last-4 key reference) for that email - plaintext
+license keys can never be retrieved through the API, because they are
+stored only as peppered SHA-256 hashes.
+
+### POST /portal_licenses
+Body: `{"email": "member@example.com", "timestamp": 1710000000, "request_id": "portal-..."}`
+
+Response: `licenses[]` - `license_id, key_last4, product_id, product_name,
+product_version, license_type, status (effective), issue_status,
+max_activations, current_activations, issued_at, expires_at, domains[]`
+(`domain, status, activated_at, last_seen_at, deactivated_at`).
+
+### POST /portal_deactivate
+Body: `{"email": "...", "license_id": 12, "domain": "example.com",
+"timestamp": ..., "request_id": "..."}`
+
+Releases the activation slot if (and only if) the license belongs to that
+email. Errors: `LICENSE_NOT_FOUND`, `DOMAIN_NOT_FOUND`, `BAD_REQUEST`.
+
 ## Signature scheme (Ed25519)
 
 Canonical string (UTF-8, `\n` separators):

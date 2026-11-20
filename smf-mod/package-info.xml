@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+  AR License Manager v1.0 - SMF 2.1.8 integration package
+  Copyright (c) ARNIT CREATION. All rights reserved.
+  This package adds no tables, modifies no SMF core files and stores all
+  its configuration in SMF's own settings table, so install, upgrade and
+  uninstall are completely reversible.
+-->
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+  <id>arnitcreation:ARLicenseManager</id>
+  <name>AR License Manager</name>
+  <version>1.0.0</version>
+  <type>modification</type>
+
+  <install for="2.1 - 2.1.99">
+    <require-file name="Sources/ARLM.php" destination="$sourcedir/ARLM.php" />
+    <require-file name="Themes/default/ARLM.template.php" destination="$themedir/ARLM.template.php" />
+    <require-file name="Themes/default/languages/ARLM.english.php" destination="$themedir/languages/ARLM.english.php" />
+    <code type="file">install-code.php</code>
+    <hook hook="integrate_admin_areas" function="arlm_admin_areas" file="$sourcedir/ARLM.php" />
+    <hook hook="integrate_actions" function="arlm_actions" file="$sourcedir/ARLM.php" />
+    <redirect url="?action=admin;area=arlm" timeout="2500" />
+  </install>
+
+  <uninstall for="2.1 - 2.1.99">
+    <hook hook="integrate_admin_areas" function="arlm_admin_areas" file="$sourcedir/ARLM.php" />
+    <hook hook="integrate_actions" function="arlm_actions" file="$sourcedir/ARLM.php" />
+    <code type="file">uninstall-code.php</code>
+    <remove-file name="$sourcedir/ARLM.php" />
+    <remove-file name="$themedir/ARLM.template.php" />
+    <remove-file name="$themedir/languages/ARLM.english.php" />
+  </uninstall>
+</package-info>

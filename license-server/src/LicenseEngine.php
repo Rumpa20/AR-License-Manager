@@ -289,6 +289,119 @@ final class LicenseEngine
         ];
     }
 
+
+    /**
+     * POST /portal_licenses - licenses of one customer for owner-side
+     * portals (e.g. the SMF mod) that authenticate the member themselves.
+     * Authentication is the calling platform's API client plus the member
+     * email; plaintext keys are never returned (hash-only storage).
+     */
+    public static function portalLicenses(array $body, array $ctx): array
+    {
+        $email = filter_var(trim((string) ($body['email'] ?? '')), FILTER_VALIDATE_EMAIL) ?: '';
+        if ($email === '') {
+            throw new ApiException(400, 'BAD_REQUEST', 'A valid customer email is required.');
+        }
+        $customer = Database::one('SELECT id, status FROM ' . Database::table('customers') . ' WHERE email = ?', [$email]);
+        if ($customer === null) {
+            return ['success' => true, 'licenses' => [], 'count' => 0];
+        }
+        $licenses = Database::all(
+            'SELECT l.id, l.key_last4, l.license_type, l.max_activations, l.current_activations, l.status, l.issued_at, l.expires_at,
+                    p.product_uid, p.name AS product_name, p.version AS product_version
+             FROM ' . Database::table('licenses') . ' l
+             INNER JOIN ' . Database::table('products') . ' p ON p.id = l.product_id
+             WHERE l.customer_id = ? ORDER BY l.id DESC',
+            [(int) $customer['id']]
+        );
+        $out = [];
+        foreach ($licenses as $license) {
+            $effective = self::effectiveState($license);
+            $effectiveStatus = $license['status'] === 'active' ? $effective : $license['status'];
+            $domains = Database::all(
+                'SELECT id, domain, status, activated_at, last_seen_at, deactivated_at
+                 FROM ' . Database::table('activations') . ' WHERE license_id = ? ORDER BY id DESC',
+                [(int) $license['id']]
+            );
+            foreach ($domains as &$d) {
+                $d['id'] = (int) $d['id'];
+                unset($d['domain_hash']);
+            }
+            unset($d);
+            $out[] = [
+                'license_id'          => (int) $license['id'],
+                'key_last4'           => (string) $license['key_last4'],
+                'product_id'          => (string) $license['product_uid'],
+                'product_name'        => (string) $license['product_name'],
+                'product_version'     => (string) $license['product_version'],
+                'license_type'        => (string) $license['license_type'],
+                'status'              => $effectiveStatus,
+                'issue_status'        => (string) $license['status'],
+                'max_activations'     => (int) $license['max_activations'],
+                'current_activations' => (int) $license['current_activations'],
+                'issued_at'           => $license['issued_at'],
+                'expires_at'          => $license['expires_at'],
+                'domains'             => $domains,
+            ];
+        }
+        return ['success' => true, 'licenses' => $out, 'count' => count($out)];
+    }
+
+    /**
+     * POST /portal_deactivate - customer-initiated domain release for a
+     * license they own (portal callers verify the member session; the API
+     * client permission 'portal_deactivate' must be granted explicitly).
+     */
+    public static function portalDeactivate(array $body, array $ctx): array
+    {
+        $email = filter_var(trim((string) ($body['email'] ?? '')), FILTER_VALIDATE_EMAIL) ?: '';
+        $licenseId = (int) ($body['license_id'] ?? 0);
+        $domain = Domains::normalize((string) ($body['domain'] ?? ''));
+        if ($email === '' || $licenseId <= 0 || $domain === null) {
+            throw new ApiException(400, 'BAD_REQUEST', 'email, license_id and domain are required.');
+        }
+        $license = Database::one(
+            'SELECT l.*, c.email AS customer_email
+             FROM ' . Database::table('licenses') . ' l
+             INNER JOIN ' . Database::table('customers') . ' c ON c.id = l.customer_id
+             WHERE l.id = ? AND c.email = ? LIMIT 1',
+            [$licenseId, $email]
+        );
+        if ($license === null) {
+            throw new ApiException(404, 'LICENSE_NOT_FOUND', 'License not found for this customer.');
+        }
+        $activation = Database::one(
+            'SELECT id, status FROM ' . Database::table('activations') . ' WHERE license_id = ? AND domain_hash = ? LIMIT 1',
+            [$licenseId, Domains::hash($domain)]
+        );
+        if ($activation === null) {
+            throw new ApiException(404, 'DOMAIN_NOT_FOUND', 'That domain is not activated on this license.');
+        }
+        Database::begin();
+        try {
+            Database::run(
+                "UPDATE " . Database::table('activations') . " SET status = 'deactivated', deactivated_at = NOW() WHERE id = ? AND status = 'active'",
+                [(int) $activation['id']]
+            );
+            Database::run(
+                'UPDATE ' . Database::table('licenses') . ' SET current_activations = GREATEST(current_activations - 1, 0) WHERE id = ? AND current_activations > 0',
+                [$licenseId]
+            );
+            Database::commit();
+        } catch (Throwable $e) {
+            Database::rollBack();
+            throw $e;
+        }
+        return [
+            'success'  => true,
+            'message'  => 'Domain deactivated successfully.',
+            'license_id' => $licenseId,
+            'domain'   => $domain,
+            'timestamp' => (int) ($ctx['timestamp'] ?? time()),
+            'request_id' => (string) ($ctx['request_id'] ?? ''),
+        ];
+    }
+
     private static function userAgent(): ?string
     {
         $ua = trim((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));

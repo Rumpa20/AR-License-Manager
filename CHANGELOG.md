@@ -19,3 +19,42 @@
 - One-time web installer (tables, keys, settings, admin, config.php).
 - Admin login + live dashboard shell.
 - Integration test suite (tests/run-tests.php).
+
+### Stage 2
+- Full admin dashboard: 13 page modules behind a responsive layout
+  (dashboard, products, licenses, generate, customers, orders, activations,
+  API clients, API logs, security logs, reports, settings, system).
+- Search, whitelisted sorting, pagination, CSV exports (admin-guarded) and
+  CSRF-checked/bulk actions on every list page.
+- License actions: bulk status change, set status (incl. pending), extend
+  from expiry or today, change activation limit, transactional reset of all
+  activations, single-activation admin deactivate/reactivate with counter
+  correction.
+- API Clients: creation with one-time Client ID + Secret display (secret
+  stored SHA-256 hashed only), disable/revoke/re-enable, editable per-client
+  rate limit, per-client request and error counters.
+- Settings: server + API base URLs, license defaults, key prefix, rate
+  limit, local-domain allowance, maintenance mode, notification emails,
+  language selector, brand; store shared secret rotation with one-time
+  display. The key pepper and signing keys are intentionally NOT rotatable
+  from the UI (they would invalidate all issued clients/keys at once).
+- System page: PHP/extension/database checks, per-table row counts,
+  configuration overview; secrets never rendered.
+- API hardening: rate limiting enforced on every endpoint (previously GET
+  only) and MAINTENANCE_MODE (503) enforcement for the settings toggle.
+
+### Stage 3 (server side + SMF package)
+- New portal API endpoints: POST /portal_licenses and
+  POST /portal_deactivate, gated by dedicated per-client permissions and
+  documented in docs/API-REFERENCE.md. Plaintext keys are never exposed
+  through the API (hash-only storage).
+- SMF 2.1.8 installable package (smf-mod/): valid package-info.xml
+  (install/uninstall with XML-validated hook tags), install/uninstall code
+  that only seeds/arlm_* settings (drops nothing else), no core file edits,
+  PHP 8.1 + sodium checks before install.
+- SMF mod: admin area (connection dashboard + credentials/test settings
+  with SMF session + token CSRF protection) and member license portal
+  (index.php?action=licenses) with per-member email ownership, domain
+  deactivation and status badges.
+- English language file (ARLM.english.php) with all strings - Bengali and
+  Hindi translations can later be added as drop-in files.

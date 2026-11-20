@@ -13,7 +13,7 @@ use ARLM\Logger;
 use ARLM\View;
 
 $t = static fn (string $n): string => \ARLM\Database::table($n);
-$endpoints = ['activate', 'validate', 'deactivate', 'check', 'products'];
+$endpoints = ['activate', 'validate', 'deactivate', 'check', 'products', 'portal_licenses', 'portal_deactivate'];
 $states = ['active', 'disabled', 'revoked'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
