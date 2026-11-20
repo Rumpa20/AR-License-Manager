@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# REST API v1: https://your-site/arlm/api/v1/{endpoint}
+# Endpoint may also be passed as ?endpoint={name} when mod_rewrite
+# is unavailable (fallback documented in docs/API-REFERENCE.md).
+RewriteRule ^api/v1/([a-z_]+)/?$ api/v1/index.php?endpoint=$1 [QSA,L]
+</IfModule>
+
+# Never serve raw config, storage or SQL files.
+<FilesMatch "\.(sql|log|md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
