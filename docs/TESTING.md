@@ -23,8 +23,23 @@ idempotent replay; repeat activation not consuming a slot; unknown license;
 wrong product; invalid domain; localhost rejection; expired/suspended/
 revoked/pending states; activation limits and slot reuse after
 deactivation; validate on unbound domain; wrong/missing credentials; stale
-timestamp; per-client rate limiting; SQL-injection-style key input.
-Execute with: php tests/run-tests.php --user=... --pass=...
+timestamp; per-client rate limiting; SQL-injection-style key input; and
+(Stage 4) store webhook cases: full happy-path fulfillment (real license,
+orders + customers rows written), duplicate webhook idempotency (no second
+license), stale timestamp, forged and missing signatures, missing customer
+email, unknown product_uid, blocked customer, refunded order, and
+unconfigured-store 503. Execute with:
 
-CSRF/XSS/ownership/webhook cases are covered once the respective surfaces
-exist (Stages 2-4) and will be added to this file with results.
+    php tests/run-tests.php --user=... --pass=...
+
+## Sandbox verification performed (Stages 2-4)
+
+- All PHP files structurally verified with the PHP-segment state-machine
+  checker (brace/paren/bracket balance, string/comment handling, corruption
+  markers). Stage 4 added StoreWebhook, webhook entry point, store adapter
+  and three SDK files - all verified balanced. This is NOT a substitute for
+  `php -l` or the runtime suite above.
+- smf-mod/package-info.xml validated as well-formed XML (Stage 3).
+- NOT executed in sandbox: php -l / actual PHP execution, the MySQL schema,
+  tests/run-tests.php, SMF Package Manager install on a live SMF 2.1.8.
+  These remain the pre-release gate on a real host.

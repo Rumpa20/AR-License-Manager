@@ -231,5 +231,92 @@ echo "== SQL injection sanity ==\n";
 $r = engineCall('activate', ["license_key" => "ARLM-' OR 1=1 --", 'product_id' => 'PRODUCT-001', 'domain' => 'evil.com']);
 check('injection-style key rejected as bad format', ($r['error_code'] ?? '') === 'BAD_REQUEST');
 
+echo "== store webhook (StoreWebhook::handle, no HTTP) ==\n";
+$storeSecret = 'storetest_' . bin2hex(random_bytes(12));
+\ARLM\Settings::set('store_shared_secret', $storeSecret);
+
+function webhookCall(array $payload, ?string $secret = null, ?int $ts = null, array $headerOver = []): array
+{
+    $body = json_encode($payload, JSON_UNESCAPED_SLASHES);
+    $headers = array_merge([
+        'x-arlm-store-timestamp' => (string) ($ts ?? time()),
+        'x-arlm-store-signature' => hash_hmac('sha256', (string) $body, $secret ?? (string) \ARLM\Settings::get('store_shared_secret')),
+    ], $headerOver);
+    try {
+        $out = \ARLM\StoreWebhook::handle((string) $body, $headers, '127.0.0.1');
+        return ['status' => $out['status']] + $out['response'];
+    } catch (\ARLM\ApiException $e) {
+        return ['status' => $e->statusCode, 'error_code' => $e->errorCode];
+    }
+}
+
+$whPayload = [
+    'order_ref' => 'ORD-TEST-1',
+    'txn_id' => 'TXN-TEST-1',
+    'product_uid' => 'PRODUCT-001',
+    'amount' => 499.0,
+    'currency' => 'INR',
+    'store_name' => 'arnit_store_test',
+    'customer' => ['email' => 'storebuyer@example.com', 'name' => 'Store Buyer'],
+    'license' => ['type' => 'annual', 'activation_limit' => 1, 'duration_days' => 365],
+];
+$r = webhookCall($whPayload);
+check('webhook fulfillment succeeds end-to-end', ($r['status'] ?? 0) === 200 && ($r['success'] ?? false) === true);
+check('webhook created a real license row', (int) ($r['license_id'] ?? 0) > 0 && (int) \ARLM\Database::value(
+    'SELECT COUNT(*) FROM ' . \ARLM\Database::table('licenses') . ' WHERE id = ?', [(int) $r['license_id']]
+) === 1);
+check('webhook created order row in fulfilled state', \ARLM\Database::value(
+    "SELECT status FROM " . \ARLM\Database::table('orders') . " WHERE order_ref = 'ORD-TEST-1'"
+) === 'fulfilled');
+check('webhook created/linked customer by email', (int) \ARLM\Database::value(
+    'SELECT COUNT(*) FROM ' . \ARLM\Database::table('customers') . " WHERE email = 'storebuyer@example.com'"
+) === 1);
+$r2 = webhookCall($whPayload);
+check('duplicate webhook idempotent, already_fulfilled', ($r2['already_fulfilled'] ?? false) === true
+    && (int) ($r2['license_id'] ?? 0) === (int) ($r['license_id'] ?? -1));
+check('duplicate webhook created no second license', (int) \ARLM\Database::value(
+    "SELECT COUNT(*) FROM " . \ARLM\Database::table('orders') . " WHERE order_ref = 'ORD-TEST-1'"
+) === 1);
+
+$uidk = $whPayload;
+$uidk['order_ref'] = 'ORD-TEST-2';
+$r = webhookCall($uidk, null, time() - 900);
+check('stale webhook timestamp rejected BAD_TIMESTAMP', ($r['error_code'] ?? '') === 'BAD_TIMESTAMP');
+$r = webhookCall($uidk, 'wrong-store-secret');
+check('forged webhook signature rejected BAD_SIGNATURE', ($r['error_code'] ?? '') === 'BAD_SIGNATURE');
+$r = webhookCall($uidk, null, time(), ['x-arlm-store-signature' => '']);
+check('missing webhook signature rejected', ($r['error_code'] ?? '') === 'BAD_SIGNATURE');
+$bad = $uidk;
+unset($bad['customer']);
+$r = webhookCall($bad);
+check('webhook without customer email rejected BAD_REQUEST', ($r['error_code'] ?? '') === 'BAD_REQUEST');
+$badP = $uidk;
+$badP['product_uid'] = 'PRODUCT-GHOST';
+$r = webhookCall($badP);
+check('unknown product_uid rejected PRODUCT_NOT_FOUND', ($r['error_code'] ?? '') === 'PRODUCT_NOT_FOUND');
+
+\ARLM\Database::run(
+    'INSERT INTO ' . \ARLM\Database::table('customers') . " (email, name, source, status) VALUES ('blocked@example.com', 'Blocked', 'external', 'blocked')"
+);
+$blk = $uidk;
+$blk['order_ref'] = 'ORD-TEST-3';
+$blk['customer'] = ['email' => 'blocked@example.com', 'name' => 'Blocked'];
+$r = webhookCall($blk);
+check('blocked customer order refused CUSTOMER_BLOCKED', ($r['error_code'] ?? '') === 'CUSTOMER_BLOCKED');
+
+\ARLM\Database::run(
+    'INSERT INTO ' . \ARLM\Database::table('orders') . " (order_ref, store_name, product_id, customer_id, amount, currency, status, payload)
+     VALUES ('ORD-TEST-REFUND', 'arnit_store_test', ?, 1, 100.00, 'INR', 'refunded', '{}')",
+    [$productId]
+);
+$ref = $uidk;
+$ref['order_ref'] = 'ORD-TEST-REFUND';
+$r = webhookCall($ref);
+check('refunded order never fulfilled ORDER_NOT_FULFILLABLE', ($r['error_code'] ?? '') === 'ORDER_NOT_FULFILLABLE');
+\ARLM\Settings::set('store_shared_secret', '');
+$r = webhookCall($uidk);
+check('unconfigured webhook endpoint answers STORE_NOT_CONFIGURED', ($r['error_code'] ?? '') === 'STORE_NOT_CONFIGURED');
+\ARLM\Settings::set('store_shared_secret', $storeSecret);
+
 echo "\nRESULT: $pass passed, $fail failed\n";
 exit($fail === 0 ? 0 : 1);

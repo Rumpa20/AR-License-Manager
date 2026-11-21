@@ -79,5 +79,10 @@ Critical operations (activation, fulfillment) run inside transactions.
   no core file edits, reversible install/uninstall) + member license
   portal (index.php?action=licenses) backed by the dedicated
   portal_licenses / portal_deactivate API endpoints.
-- Stage 4 (PLANNED): store webhook adapter, SDKs, docs, packaging, final
-  ZIP deliverables.
+- Stage 4 (COMPLETE): store purchase webhook (HMAC + timestamp,
+  transactional idempotent fulfillment by order_ref, license creation +
+  delivery mail, webhook HTTP entry point), drop-in store-side adapter,
+  SDKs (PHP, WordPress, SMF, Android with Tink-verifier hook), full docs
+  suite (installation, admin, customer, API, store integration, security,
+  upgrade/uninstall, troubleshooting, testing), webhook test cases in
+  tests/run-tests.php. Packaging/ZIPs follow this stage.

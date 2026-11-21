@@ -43,6 +43,33 @@
 - API hardening: rate limiting enforced on every endpoint (previously GET
   only) and MAINTENANCE_MODE (503) enforcement for the settings toggle.
 
+### Stage 4 (store integration, SDKs, docs)
+- Store purchase webhook: POST /webhooks/store/ with HMAC-SHA256 + ±300 s
+  timestamp verification (constant-time), 64 KB body cap, POST-only,
+  HTTPS-enforced entry point.
+- Idempotent transactional fulfillment: SELECT ... FOR UPDATE on UNIQUE
+  order_ref; duplicates answered from stored state (already_fulfilled,
+  exactly one license per order); failed/refunded/blocked orders answer
+  409; unknown/inactive product 422; blocked customer 403; everything
+  logged to security/audit logs.
+- License creation inside the fulfillment transaction, 5-attempt duplicate
+  hash retry, one-time key disclosure in webhook JSON + delivery email;
+  plaintext never stored.
+- Store-side drop-in adapter sdk/store-adapter/arlm-store-notify.php
+  (env-config server URL + shared secret, curl, HMAC signing).
+- SDKs: sdk/php/ARLMClient.php (single-file, signed-response
+  verification, fail-closed assertVerified), sdk/wordpress/ (plugin with
+  nonce-guarded settings + helpers), sdk/smf/ARLM-SDK-example.php, and
+  sdk/android/ARLMClient.java (HttpURLConnection + minimal JSON parser +
+  pluggable Ed25519 Verifier for Tink) with SDK security documented
+  (never embed secrets; client-side checks are bypassable).
+- Docs: INSTALLATION-GUIDE, ADMIN-GUIDE, CUSTOMER-GUIDE, SECURITY,
+  UPGRADE-UNINSTALL, TROUBLESHOOTING, STORE-INTEGRATION; README/TESTING/
+  ARCHITECTURE updated.
+- tests/run-tests.php: 12+ webhook cases incl. duplicate delivery,
+  forged/stale/missing signatures, unknown product, blocked customer,
+  refunded order, unconfigured endpoint.
+
 ### Stage 3 (server side + SMF package)
 - New portal API endpoints: POST /portal_licenses and
   POST /portal_deactivate, gated by dedicated per-client permissions and

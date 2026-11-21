@@ -16,9 +16,9 @@ Three integrated components:
 2. **SMF 2.1.8 Integration Mod** (`smf-mod/`) - installable package adding
    an admin dashboard and a customer license portal to your forum
    (built in Stages 3-4).
-3. **Developer SDK + store adapter** (`sdk/`, `store-integration/`) -
+3. **Developer SDK + store adapter** (`sdk/` and `docs/STORE-INTEGRATION.md`) -
    examples for PHP, WordPress, SMF and Android, plus the signed
-   Cashfree store-to-server webhook (Stage 4).
+   store-to-server webhook and the drop-in store-side adapter (Stage 4).
 
 ## Requirements
 
@@ -36,12 +36,25 @@ Three integrated components:
 4. Log in at `public/index.php`, create an API Client, create a product,
    generate a license.
 
-See docs/INSTALLATION.md (written for DirectAdmin + Android workflow).
+See docs/INSTALLATION-GUIDE.md (written for DirectAdmin + Android
+workflow).
 
 ## Status / stages
 
 Documented in docs/ARCHITECTURE.md - this working tree is a staged build;
 do not redistribute intermediate stages as final.
+
+## Documentation map
+
+- docs/INSTALLATION-GUIDE.md - full setup incl. SMF package + store
+- docs/ADMIN-GUIDE.md - the 13 admin modules, actions, log meanings
+- docs/CUSTOMER-GUIDE.md - end-customer-facing guide
+- docs/API-REFERENCE.md - REST API v1 + portal endpoints + canonical string
+- docs/STORE-INTEGRATION.md - Cashfree store webhook adapter
+- docs/SECURITY.md - protections, secrets inventory, client-bypass reality
+- docs/UPGRADE-UNINSTALL.md - safe upgrade/rollback/removal
+- docs/TROUBLESHOOTING.md - every error code + fix
+- docs/ARCHITECTURE.md - components, DB, stage status
 
 ## Testing
 
