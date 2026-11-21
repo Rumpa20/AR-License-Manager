@@ -122,7 +122,7 @@ add_action('admin_menu', static function () {
                 <?php wp_nonce_field('arlm_wp_save', 'arlm_wp_nonce'); ?>
                 <table class="form-table" role="presentation">
                     <tr><th scope="row">Server URL</th>
-                        <td><input type="url" name="server_url" value="<?php echo esc_attr($o['server_url'] ?? 'https://arnitcreation.online/arlm'); ?>" class="regular-text" required></td></tr>
+                        <td><input type="url" name="server_url" value="<?php echo esc_attr($o['server_url'] ?? 'https://www.abruar.online/arlm'); ?>" class="regular-text" required></td></tr>
                     <tr><th scope="row">API Client ID</th>
                         <td><input type="text" name="client_id" value="<?php echo esc_attr($o['client_id'] ?? ''); ?>" class="regular-text"></td></tr>
                     <tr><th scope="row">API Client Secret</th>

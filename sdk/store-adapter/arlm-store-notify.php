@@ -42,7 +42,7 @@ if (!function_exists('arlm_notify_license_server')) {
      */
     function arlm_notify_license_server(array $order): array
     {
-        $serverUrl = rtrim((string) (getenv('ARLM_SERVER_URL') ?: 'https://arnitcreation.online/arlm'), '/');
+        $serverUrl = rtrim((string) (getenv('ARLM_SERVER_URL') ?: 'https://www.abruar.online/arlm'), '/');
         $sharedSecret = (string) (getenv('ARLM_STORE_SHARED_SECRET') ?: '');
 
         if ($sharedSecret === '') {

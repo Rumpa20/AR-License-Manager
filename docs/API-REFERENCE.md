@@ -1,7 +1,7 @@
 # AR License Manager - API Reference v1
 Copyright (c) ARNIT CREATION
 
-Base URL: `https://arnitcreation.online/arlm/api/v1/` (HTTPS required)
+Base URL: `https://www.abruar.online/arlm/api/v1/` (HTTPS required)
 
 ## Authentication
 

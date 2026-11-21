@@ -7,7 +7,7 @@ Copyright (c) ARNIT CREATION.
 
 ## 1. Server requirements
 
-**License Server** (install on arnitcreation.online, NOT on customer forums):
+**License Server** (install on www.abruar.online, NOT on customer forums):
 
 - PHP 8.1 or newer with extensions: `pdo_mysql`, `sodium`, `mbstring`,
   `json`, `curl` (outgoing), `filter`.
@@ -38,7 +38,7 @@ Copyright (c) ARNIT CREATION.
    - leave `installed => false`
 3. Create the database + user in DirectAdmin → MySQL Management and grant
    the user ALL privileges on that database only.
-4. In a browser open `https://arnitcreation.online/arlm/install/`. The
+4. In a browser open `https://www.abruar.online/arlm/install/`. The
    installer performs its own preflight (PHP version, sodium, pdo_mysql,
    writable paths) and refuses to continue on failure - it never fakes
    success. Fill in DB details and the initial admin account and submit.
@@ -47,7 +47,7 @@ Copyright (c) ARNIT CREATION.
 5. **Delete `install/`** from the server immediately (the installer also
    locks itself out afterward, but delete it anyway) and set
    `config/config.php` back to read-only (644).
-6. Log in at `https://arnitcreation.online/arlm/public/index.php`.
+6. Log in at `https://www.abruar.online/arlm/public/index.php`.
 
 The installer output shows your **Ed25519 public key** (base64url). Copy it
 now - SDKs need it to verify signed replies. It is also always visible in
@@ -94,7 +94,7 @@ Admin → System Information.
 See `docs/STORE-INTEGRATION.md`. Short version: rotate the shared secret in
 Admin → Settings → Store Integration, deploy the store-side adapter from
 `sdk/store-adapter/`, and point the store post-payment confirmation at
-`https://arnitcreation.online/arlm/webhooks/store/`. Payment success is only
+`https://www.abruar.online/arlm/webhooks/store/`. Payment success is only
 ever confirmed server-to-server; browser redirects are never trusted.
 
 ## 7. Backup and restore

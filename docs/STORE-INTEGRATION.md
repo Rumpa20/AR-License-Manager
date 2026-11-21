@@ -16,7 +16,7 @@ Customer pays -> Cashfree -> your store verifies payment SERVER-SIDE
               arlm_notify_license_server($order)     [sdk/store-adapter/]
                                    |  JSON + HMAC-SHA256 headers
                                    v
-   https://arnitcreation.online/arlm/webhooks/store/   [license server]
+   https://www.abruar.online/arlm/webhooks/store/   [license server]
                                    |
                      license generated + emailed + order row fulfilled
 ```
@@ -28,7 +28,7 @@ Customer pays -> Cashfree -> your store verifies payment SERVER-SIDE
    from installation; rotating replaces it).
 2. **Store server**: set two environment variables (e.g. in an
    .htaccess-protected store config or your hosting panel):
-   - `ARLM_SERVER_URL=https://arnitcreation.online/arlm`
+   - `ARLM_SERVER_URL=https://www.abruar.online/arlm`
    - `ARLM_STORE_SHARED_SECRET=<the secret copied in step 1>`
    Secrets must NOT live in git or in publicly served files.
 3. Deploy `sdk/store-adapter/arlm-store-notify.php` into the store

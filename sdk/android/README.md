@@ -18,7 +18,7 @@ Minimal usage (desktop Java or a JVM test):
 
 ```java
 ARLMClient client = new ARLMClient(
-    "https://arnitcreation.online/arlm",   // license server URL
+    "https://www.abruar.online/arlm",   // license server URL
     "YOUR_CLIENT_ID",                       // from License Server → API Clients
     "YOUR_CLIENT_SECRET",                   // SERVER-SIDE ONLY - see warning below
     "SERVER_ED25519_PUBLIC_KEY_B64URL",     // from the installer output

@@ -78,7 +78,7 @@ email on the forum account must match the store purchase email; the admin
 can also link a member manually (Customers in the license server).
 
 **Test Connection fails** — check the URL (must point at the license server
-root, e.g. `https://arnitcreation.online/arlm`), client credentials +
+root, e.g. `https://www.abruar.online/arlm`), client credentials +
 `portal_licenses`/`portal_deactivate` permissions, and that the forum can
 make outbound HTTPS requests (some hosts block outgoing curl/stream).
 

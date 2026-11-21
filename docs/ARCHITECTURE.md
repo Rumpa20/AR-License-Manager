@@ -6,7 +6,7 @@ Copyright (c) ARNIT CREATION
 ```
 +------------------------+        HTTPS/JSON        +---------------------------+
 |   Customer software    |------------------------->|   Central License Server  |
-| (SMF mods, WP plugins, |  X-ARLM-Client-Id/Secret |  arnitcreation.online/arlm|
+| (SMF mods, WP plugins, |  X-ARLM-Client-Id/Secret |  www.abruar.online/arlm|
 |  PHP apps, Android,    |<-------------------------|  PHP 8.1+ / MySQL 5.7+    |
 |  desktop apps)         |   signed Ed25519 reply   +---------------------------+
 +------------------------+                                    ^
@@ -21,7 +21,7 @@ Copyright (c) ARNIT CREATION
 ## Central License Server
 
 Standalone PHP 8.1+ application, no Composer dependencies, no SMF dependency.
-Deployed at `https://arnitcreation.online/arlm/`.
+Deployed at `https://www.abruar.online/arlm/`.
 
 ```
 license-server/
@@ -55,7 +55,7 @@ Critical operations (activation, fulfillment) run inside transactions.
 
 ## API contract
 
-- Base: `https://arnitcreation.online/arlm/api/v1/`
+- Base: `https://www.abruar.online/arlm/api/v1/`
 - Auth headers: `X-ARLM-Client-Id`, `X-ARLM-Secret` (hashed at rest).
 - POST bodies also include `timestamp` (±300 s skew) and `request_id`
   (idempotency). Replays of a `(client, request_id)` pair return the stored

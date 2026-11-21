@@ -3,14 +3,15 @@
 Premium Digital License Management System for SMF 2.1.8 and standalone
 PHP products.
 
-Copyright (c) ARNIT CREATION. All rights reserved. See LICENSE.
+Copyright (c) 2026 Rumpa - ARNIT CREATION, www.abruar.online.
+All rights reserved. See LICENSE.
 
 ## What it is
 
 Three integrated components:
 
 1. **Central License Server** (`license-server/`) - standalone PHP 8.1+
-   application for arnitcreation.online. Owns products, license keys,
+   application for www.abruar.online. Owns products, license keys,
    customers, orders, activations, API clients, logs. No SMF or Composer
    dependency.
 2. **SMF 2.1.8 Integration Mod** (`smf-mod/`) - installable package adding
@@ -29,7 +30,7 @@ Three integrated components:
 
 ## Quick start (license server)
 
-1. Upload `license-server/` to e.g. https://arnitcreation.online/arlm/
+1. Upload `license-server/` to e.g. https://www.abruar.online/arlm/
 2. Make `license-server/config/` writable, open `install/` in a browser,
    fill in DB details + admin account, install.
 3. Delete `install/`.

@@ -108,7 +108,7 @@ $chk = static fn (string $name): bool => Settings::get($name, '0') === '1';
   <input type="hidden" name="do" value="save">
   <h2>Server</h2>
   <div class="filters">
-    <div><label>Server URL (https)</label><input type="url" name="server_url" value="<?= $e('server_url', 'https://arnitcreation.online/arlm') ?>" required></div>
+    <div><label>Server URL (https)</label><input type="url" name="server_url" value="<?= $e('server_url', 'https://www.abruar.online/arlm') ?>" required></div>
     <div><label>API Base URL</label><input type="text" name="api_base_url" value="<?= $e('api_base_url', Settings::get('server_url') . '/api/v1') ?>"></div>
   </div>
   <h2>Licenses</h2>

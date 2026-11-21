@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $errors === []) {
         $errors[] = 'An admin username and a password of at least 10 characters are required.';
     }
     if ($serverUrl === '' || !preg_match('#^https://#', $serverUrl)) {
-        $errors[] = 'License Server URL must be a full https:// URL, e.g. https://arnitcreation.online/arlm';
+        $errors[] = 'License Server URL must be a full https:// URL, e.g. https://www.abruar.online/arlm';
     }
 
     if ($errors === []) {
@@ -205,7 +205,7 @@ code, pre { background:#eef2f6; padding:2px 5px; border-radius:4px; word-break:b
     <label for="admin_pass">Admin password (min 10 chars)</label><input id="admin_pass" type="password" name="admin_pass" autocomplete="new-password" required>
     <h2>Server</h2>
     <label for="server_url">License Server URL (https)</label>
-    <input id="server_url" type="url" name="server_url" value="https://arnitcreation.online/arlm" required>
+    <input id="server_url" type="url" name="server_url" value="https://www.abruar.online/arlm" required>
     <button type="submit">Install AR License Manager</button>
   </form>
 <?php endif; ?>

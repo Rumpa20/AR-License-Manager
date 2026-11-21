@@ -40,7 +40,7 @@ function arlmSdkClient(): ARLMClient
 function arlmSdkInstall(): void
 {
     updateSettings(array(
-        'arlm_sdk_server_url' => 'https://arnitcreation.online/arlm',
+        'arlm_sdk_server_url' => 'https://www.abruar.online/arlm',
         'arlm_sdk_client_id'  => '',
         'arlm_sdk_secret'     => '',
         'arlm_sdk_public_key' => '',

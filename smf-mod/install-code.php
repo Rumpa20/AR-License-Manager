@@ -18,7 +18,7 @@ if (!extension_loaded('sodium') || !function_exists('sodium_crypto_sign_verify_d
 }
 
 $arlm_defaults = array(
-    'arlm_server_url'      => 'https://arnitcreation.online/arlm',
+    'arlm_server_url'      => 'https://www.abruar.online/arlm',
     'arlm_api_client_id'   => '',
     'arlm_api_secret'      => '',
     'arlm_sign_public_key' => '',
