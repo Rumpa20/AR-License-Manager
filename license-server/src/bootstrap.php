@@ -17,18 +17,18 @@ if (!defined('ARLM_ROOT')) {
 
 spl_autoload_register(static function (string $class): void {
     if (str_starts_with($class, 'ARLM\\')) {
-        $file = ARLM_ROOT . '/src/' . str_replace('\\\\', '/', substr($class, 5)) . '.php';
+        $file = ARLM_ROOT . '/src/' . str_replace('\\', '/', substr($class, 5)) . '.php';
         if (is_file($file)) {
             require $file;
         }
     }
 });
 
-\\ARLM\\Config::load(ARLM_ROOT . '/config/config.php');
+\ARLM\Config::load(ARLM_ROOT . '/config/config.php');
 
-if (!\\ARLM\\Config::get('installed')) {
+if (!\ARLM\Config::get('installed')) {
     header('Location: install/');
     exit;
 }
 
-\\ARLM\\Settings::boot();
+\ARLM\Settings::boot();
