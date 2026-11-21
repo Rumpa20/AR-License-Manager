@@ -94,7 +94,7 @@ function template_arlm_admin_settings(): void
     echo '
     <div class="windowbg">
         <form method="post" action="', $scripturl, '?action=admin;area=arlm;sa=settings">
-            <input type="hidden" name="', $context['arlm_admin_var'], '" value="', $context['arlm_admin_token'], '">
+            <input type="hidden" name="', $context['arlm_admin_token_var'], '" value="', $context['arlm_admin_token'], '">
             <input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
             <input type="hidden" name="do" value="save">
             <dl class="settings">
@@ -115,7 +115,7 @@ function template_arlm_admin_settings(): void
     </div>
     <div class="windowbg">
         <form method="post" action="', $scripturl, '?action=admin;area=arlm;sa=settings">
-            <input type="hidden" name="', $context['arlm_admin_var'], '" value="', $context['arlm_admin_token'], '">
+            <input type="hidden" name="', $context['arlm_admin_token_var'], '" value="', $context['arlm_admin_token'], '">
             <input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
             <input type="hidden" name="do" value="test">
             <p>', $txt['arlm_test_note'], '</p>

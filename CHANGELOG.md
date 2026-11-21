@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.1 hotfix (found on a live SMF 2.1.8 install)
+
+- Fixed: PHP 8 errors logged (GenericMenu.template.php, "foreach on null")
+  when opening the mod admin area - the dispatcher now initializes
+  $context[...]['tab_data'] as SMF requires for areas with subsections.
+- Fixed: the admin area definition used file="$sourcedir/ARLM.php",
+  but AdminMain() prepends $sourcedir itself (double path would fatal);
+  now uses the plain filename like core areas.
+- Fixed: settings form button name used a non-existent
+  $context['arlm_admin_var']; now uses $context['arlm_admin_token_var']
+  as produced by createToken('arlm_admin'), so CSRF validation passes.
+
 ## v1.0 (in development)
 
 ### Stage 1

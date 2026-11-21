@@ -34,7 +34,7 @@ function arlm_admin_areas(&$admin_areas)
 
     $admin_areas['config']['areas']['arlm'] = array(
         'label'       => $txt['arlm_admin_area'],
-        'file'        => '$sourcedir/ARLM.php',
+        'file'        => 'ARLM.php',
         'function'    => 'arlm_admin_dispatch',
         'icon'        => 'server',
         'permission'  => array('admin_forum'),
@@ -58,11 +58,21 @@ function arlm_actions(&$actionArray)
 /** Entry point for ?action=admin;area=arlm (requires admin_forum). */
 function arlm_admin_dispatch()
 {
-    global $context;
+    global $context, $txt;
 
     isAllowedTo('admin_forum');
     loadLanguage('ARLM');
     loadTemplate('ARLM');
+
+    $context[$context['admin_menu_name']]['tab_data'] = array(
+        'title'       => $txt['arlm_admin_area'],
+        'help'        => '',
+        'description' => '',
+        'tabs'        => array(
+            'home'     => array('label' => $txt['arlm_dashboard']),
+            'settings' => array('label' => $txt['arlm_settings']),
+        ),
+    );
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         checkSession('post');
