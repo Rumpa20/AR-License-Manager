@@ -12,7 +12,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 if (!defined('ARLM_ROOT')) {
-    define('ARLM_ROOT', __DIR__);
+    define('ARLM_ROOT', dirname(__DIR__));
 }
 
 spl_autoload_register(static function (string $class): void {
