@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.2 hotfix (found on a live SMF 2.1.8 install)
+
+- Fixed: package-info.xml require-file destinations included the file name,
+  but SMF 2.1.x appends basename(name) to the destination itself, producing
+  "Sources/ARLM.php/ARLM.php" (a directory named ARLM.php). Destinations
+  are now directory-only ($sourcedir, $themedir, $themedir/languages), so
+  the Package Manager installs files to their real locations.
+  Note for servers where v1.0.0 was installed via Package Manager: delete
+  the leftover directory Sources/ARLM.php/ if it exists.
+
 ## v1.0.1 hotfix (found on a live SMF 2.1.8 install)
 
 - Fixed: PHP 8 errors logged (GenericMenu.template.php, "foreach on null")

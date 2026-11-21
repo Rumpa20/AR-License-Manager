@@ -9,13 +9,13 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
   <id>arnitcreation:ARLicenseManager</id>
   <name>AR License Manager</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <type>modification</type>
 
   <install for="2.1 - 2.1.99">
-    <require-file name="Sources/ARLM.php" destination="$sourcedir/ARLM.php" />
-    <require-file name="Themes/default/ARLM.template.php" destination="$themedir/ARLM.template.php" />
-    <require-file name="Themes/default/languages/ARLM.english.php" destination="$themedir/languages/ARLM.english.php" />
+    <require-file name="Sources/ARLM.php" destination="$sourcedir" />
+    <require-file name="Themes/default/ARLM.template.php" destination="$themedir" />
+    <require-file name="Themes/default/languages/ARLM.english.php" destination="$themedir/languages" />
     <code type="file">install-code.php</code>
     <hook hook="integrate_admin_areas" function="arlm_admin_areas" file="$sourcedir/ARLM.php" />
     <hook hook="integrate_actions" function="arlm_actions" file="$sourcedir/ARLM.php" />
